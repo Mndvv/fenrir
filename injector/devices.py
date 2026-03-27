@@ -436,4 +436,72 @@ DEVICES = [
         },
         base=0xFFFF000050F00000
     ),
+    Device(
+        'rock',
+        'Xiaomi Poco M5',
+        {
+            'stage1': PayloadStage(
+                'stage1',
+                0xFFFF000050F25658, # Unknown emmc_init() adjacent func
+                0xFFFF000050F04A40, # bl platform_init()
+                description='Pre-platform initialization stage',
+            ),
+            'stage2': PayloadStage(
+                'stage2',
+                0xFFFF000050F08030,
+                0xFFFF000050F0D998, # bl notify_enter_fastboot()
+                description='Pre-fastboot initialization stage',
+            ),
+            'stage3': PayloadStage(
+                'stage3',
+                0xFFFF000050F229C8,
+                0xFFFF000050F0D9B4,
+                description='Linux initialization stage',
+            ),
+
+            'sec_get_vfy_policy': PatchStage(
+                'sec_get_vfy_policy',
+                pattern='00 01 00 b4 fd 7b bf a9',
+                replacement='00 00 80 52 c0 03 5f d6',
+                match_mode=MatchMode.ALL,
+                description='Don\'t enforce secure boot policy',
+            ),
+            'force_green_state': PatchStage(
+                'force_green_state',
+                pattern='e8 02 00 90 00 e9 0a b9 c0 03 5f d6',
+                replacement='e8 02 00 90 1f e9 0a b9 c0 03 5f d6',
+                match_mode=MatchMode.ALL,
+                description='Force boot state to always be set to green',
+            ),
+            # 'bypass_security_control': PatchStage(
+            #     'bypass_security_control',
+            #     pattern='e8 0b 40 b9 1f 0d 00 71 c0 00 00 54',
+            #     replacement='e8 0b 40 b9 1f 0d 00 71 1f 20 03 d5',
+            #     match_mode=MatchMode.ALL,
+            #     description='Skip security check - always execute commands',
+            # ),
+            'spoof_sboot_state': PatchStage(
+                'spoof_get_sboot_state',
+                pattern='fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa 20 00 80 52',
+                replacement='48 44 00 52 08 00 00 b9 00 00 80 52 c0 03 5f d6 1f 20 03 d5',
+                match_mode=MatchMode.ALL,
+                description='Force sboot state to always be ATTR_SBOOT_ONLY_ENABLE_ON_SCHIP',
+            ),
+            'spoof_lock_state': PatchStage(
+                'spoof_lock_state',
+                pattern='20 02 00 b4 fd 7b be a9 f3 0b 00 f9 fd 03 00 91',
+                replacement='88 00 80 52 08 00 00 b9 00 00 80 52 c0 03 5f d6',
+                match_mode=MatchMode.ALL,
+                description='Force lock state to always be LKS_LOCK',
+            ),
+            'dont_relock_seccfg': PatchStage(
+                'dont_relock_seccfg',
+                pattern='fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 2a 28 00 80 52',
+                replacement='00 00 80 52 c0 03 5f d6 1f 20 03 d5 1f 20 03 d5 1f 20 03 d5',
+                match_mode=MatchMode.ALL,
+                description='Prevent LK from relocking seccfg',
+            ),
+        },
+        base=0xFFFF000050F00000
+    )
 ]
