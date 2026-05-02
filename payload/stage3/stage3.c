@@ -7,7 +7,7 @@ __attribute__((section(".text.main"))) void main(void) {
     // This payload is executed right before LK emits an event to notify
     // the system that it has to boot Linux.
     printf("Entered pre-notify_boot_linux() stage3 payload!\n");
-
+    
     // If we wanted to, we could also patch the text in the rodata section by   
     // modifying the page table entries of the kernel address space.            
     //                                                                          

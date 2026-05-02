@@ -12,6 +12,8 @@ __attribute__((section(".text.main"))) void main(void) {
     // fastboot mode. This is the perfect spot to register custom fastboot
     // commands that will be available during the fastboot session.
     printf("Entered pre-notify_enter_fastboot() stage2 payload!\n");
+    video_printf("=> Rock is Entering Fastboot...\n");
+
     fastboot_register("oem r0rt1z2", cmd_r0rt1z2, true, false);
     notify_enter_fastboot();
 }
